@@ -51,12 +51,15 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Создает кастомную панель заголовка с надписью "Контакты" и кнопками управления.
+        /// </summary>
         private void CreateCustomTitleBar()
         {
             // Панель заголовка
             Panel titleBar = new Panel
             {
-                BackColor = Color.FromArgb(0, 150, 136), // Бирюзовый цвет
+                BackColor = Color.FromArgb(0, 150, 136), 
                 Height = 30,
                 Dock = DockStyle.Top
             };
@@ -65,7 +68,7 @@ namespace ContactManager
             Label lblTitle = new Label
             {
                 Text = "Контакты",
-                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), 
                 ForeColor = Color.White,
                 Dock = DockStyle.Left,
                 Padding = new Padding(10, 0, 0, 0),
@@ -76,7 +79,7 @@ namespace ContactManager
             Button btnMinimize = new Button
             {
                 Text = "-",
-                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), 
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
                 FlatStyle = FlatStyle.Flat,
@@ -90,7 +93,7 @@ namespace ContactManager
             Button btnClose = new Button
             {
                 Text = "X",
-                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), 
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
                 FlatStyle = FlatStyle.Flat,
@@ -100,23 +103,25 @@ namespace ContactManager
             };
             btnClose.Click += (s, e) => this.Close();
 
-            // Добавляем элементы на панель заголовка
             titleBar.Controls.Add(lblTitle);
             titleBar.Controls.Add(btnMinimize);
             titleBar.Controls.Add(btnClose);
 
-            // Добавляем панель заголовка на форму
             this.Controls.Add(titleBar);
         }
 
-        // Загрузка контактов из файла
+        /// <summary>
+        /// Загружает контакты из файла и обновляет список контактов.
+        /// </summary>
         private void LoadContacts()
         {
             contacts = DataManager.LoadContacts();
             UpdateContactList();
         }
 
-        // Обновление списка контактов в ListBox
+        /// <summary>
+        /// Обновляет список контактов в ListBox.
+        /// </summary>
         private void UpdateContactList()
         {
             listContacts.Items.Clear();
@@ -126,6 +131,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "Добавить".
+        /// </summary>
         private void btnAdd_Click(object sender, EventArgs e)
         {
             try
@@ -155,6 +163,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "Удалить".
+        /// </summary>
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (selectedContact != null)
@@ -170,6 +181,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Обрабатывает нажатие кнопки "Обновить".
+        /// </summary>
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (selectedContact != null)
@@ -183,6 +197,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Обрабатывает изменение выбранного элемента в списке контактов.
+        /// </summary>
         private void listContacts_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listContacts.SelectedIndex != -1)
@@ -194,6 +211,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Обрабатывает изменение текста в поле поиска.
+        /// </summary>
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             var searchText = txtSearch.Text.ToLower();
@@ -205,6 +225,9 @@ namespace ContactManager
             }
         }
 
+        /// <summary>
+        /// Очищает поля ввода.
+        /// </summary>
         private void ClearFields()
         {
             txtName.Clear();
