@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 namespace ContactManager
 {
@@ -17,24 +16,97 @@ namespace ContactManager
             InitializeComponent();
             LoadContacts();
 
-
-
-            // Настройка цветов
-            this.BackColor = Color.FromArgb(240, 240, 240); // Светло-серый фон
+            // Настройка цветов и стилей
+            this.BackColor = Color.FromArgb(245, 245, 245); // Светло-серый фон
             listContacts.BackColor = Color.White; // Белый фон списка
             listContacts.ForeColor = Color.FromArgb(64, 64, 64); // Темно-серый текст
 
-            // Стиль кнопок
+            // Отключаем стандартную панель заголовка
+            this.FormBorderStyle = FormBorderStyle.None;
+
+            // Создаем собственную панель заголовка
+            CreateCustomTitleBar();
+
+            // Шрифт для кнопок
             foreach (Button btn in new[] { btnAdd, btnUpdate, btnDelete })
             {
-                btn.BackColor = Color.FromArgb(0, 122, 204); // Синий цвет
+                btn.BackColor = Color.FromArgb(0, 150, 136); // Зеленовато-бирюзовый
                 btn.ForeColor = Color.White;
                 btn.FlatStyle = FlatStyle.Flat;
                 btn.FlatAppearance.BorderSize = 0;
-                btn.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+                btn.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular); // Обычный шрифт
+                btn.Cursor = Cursors.Hand; // Курсор в виде руки
             }
 
+            // Шрифт для текстовых полей
+            foreach (TextBox txt in new[] { txtName, txtPhone, txtAddress, txtSearch })
+            {
+                txt.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular); // Обычный шрифт
+            }
 
+            // Шрифт для меток (Label)
+            foreach (Label lbl in new[] { label1, label2, label3, label4 })
+            {
+                lbl.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular); // Обычный шрифт
+            }
+        }
+
+        private void CreateCustomTitleBar()
+        {
+            // Панель заголовка
+            Panel titleBar = new Panel
+            {
+                BackColor = Color.FromArgb(0, 150, 136), // Бирюзовый цвет
+                Height = 30,
+                Dock = DockStyle.Top
+            };
+
+            // Надпись "Контакты"
+            Label lblTitle = new Label
+            {
+                Text = "Контакты",
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                ForeColor = Color.White,
+                Dock = DockStyle.Left,
+                Padding = new Padding(10, 0, 0, 0),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+
+            // Кнопка сворачивания
+            Button btnMinimize = new Button
+            {
+                Text = "-",
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                FlatStyle = FlatStyle.Flat,
+                FlatAppearance = { BorderSize = 0 },
+                Dock = DockStyle.Right,
+                Width = 40
+            };
+            btnMinimize.Click += (s, e) => this.WindowState = FormWindowState.Minimized;
+
+            // Кнопка закрытия
+            Button btnClose = new Button
+            {
+                Text = "X",
+                Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Regular), // Обычный шрифт
+                ForeColor = Color.White,
+                BackColor = Color.Transparent,
+                FlatStyle = FlatStyle.Flat,
+                FlatAppearance = { BorderSize = 0 },
+                Dock = DockStyle.Right,
+                Width = 40
+            };
+            btnClose.Click += (s, e) => this.Close();
+
+            // Добавляем элементы на панель заголовка
+            titleBar.Controls.Add(lblTitle);
+            titleBar.Controls.Add(btnMinimize);
+            titleBar.Controls.Add(btnClose);
+
+            // Добавляем панель заголовка на форму
+            this.Controls.Add(titleBar);
         }
 
         // Загрузка контактов из файла
@@ -60,7 +132,7 @@ namespace ContactManager
             {
                 if (string.IsNullOrWhiteSpace(txtName.Text))
                 {
-                    MessageBox.Show("Поле 'Имя' обязательно для заполнения!");
+                    MessageBox.Show("Поле 'Имя' обязательно для заполнения!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -72,18 +144,14 @@ namespace ContactManager
                     Address = txtAddress.Text.Trim()
                 };
 
-
                 contacts.Add(contact);
-
                 DataManager.SaveContacts(contacts);
-
                 UpdateContactList();
-
                 ClearFields();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -91,13 +159,14 @@ namespace ContactManager
         {
             if (selectedContact != null)
             {
-                contacts.Remove(selectedContact);
-
-                DataManager.SaveContacts(contacts);
-
-                UpdateContactList();
-
-                ClearFields();
+                var result = MessageBox.Show("Вы уверены, что хотите удалить контакт?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    contacts.Remove(selectedContact);
+                    DataManager.SaveContacts(contacts);
+                    UpdateContactList();
+                    ClearFields();
+                }
             }
         }
 
@@ -110,7 +179,6 @@ namespace ContactManager
                 selectedContact.Address = txtAddress.Text.Trim();
 
                 DataManager.SaveContacts(contacts);
-
                 UpdateContactList();
             }
         }
@@ -120,8 +188,6 @@ namespace ContactManager
             if (listContacts.SelectedIndex != -1)
             {
                 selectedContact = contacts[listContacts.SelectedIndex];
-
-                // Заполнение полей ввода данными выбранного контакта
                 txtName.Text = selectedContact.Name;
                 txtPhone.Text = selectedContact.Phone;
                 txtAddress.Text = selectedContact.Address;
@@ -131,11 +197,8 @@ namespace ContactManager
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             var searchText = txtSearch.Text.ToLower();
-            var filtered = contacts.FindAll(c =>
-                c.Name.ToLower().Contains(searchText));
-
+            var filtered = contacts.FindAll(c => c.Name.ToLower().Contains(searchText));
             listContacts.Items.Clear();
-
             foreach (var contact in filtered)
             {
                 listContacts.Items.Add(contact.Name);
@@ -149,7 +212,5 @@ namespace ContactManager
             txtAddress.Clear();
             selectedContact = null;
         }
-
-
     }
 }
